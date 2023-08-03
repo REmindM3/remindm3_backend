@@ -10,6 +10,9 @@ app.get("/", (req, res) => {
   });
 });
 
+const eventsRouter = require("./routes/events_routes")
+app.use("/events", eventsRouter);
+
 module.exports = {
   app,
 };
