@@ -1,15 +1,15 @@
 const mongoose = require('mongoose')
 
-const EventsSchema = mongoose.Schema({
+const Event = mongoose.model("Event", {
     title: String,
     description: String,
     isActive: Boolean,
     isPrivate: Boolean,
     alertDate: Date, 
     createdAtDate: Date,
-    creator: id
+    // creator: this.findById
 });
 
-const Event = mongoose.model('Event', EventSchema)
+// const Event = mongoose.model('Event', EventSchema)
 
 module.exports = Event
