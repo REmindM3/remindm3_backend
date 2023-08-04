@@ -1,9 +1,34 @@
+const mongoose = require("mongoose");
 const Event = require("../models/events");
+const { response } = require("express");
 
 const getEvents = async (req, res) => {
   let events = await Event.find();
   res.send(events);
 };
+
+async function getEventById(req, res) {
+  let event = await Event.findById(req.params.id).catch((error) => {
+    console.log("An Error Occurred While Accessing Data:\n" + error);
+    res.status(404).send;
+    res.json({
+      error: "Id was not found in the database",
+    });
+  });
+  res.send(event);
+}
+
+// async function getEventByTitle(req, res) {
+//   console.log(req.params);
+//   if (!req.params.title) {
+//     return res.status(400).send('Invalid event title');
+//   }
+//   let eventByTitle = await Event.findOne({ title: req.params.title });
+//   if (!eventByTitle) {
+//     return res.status(404).send('Event not found');
+//   }
+//   res.send(eventByTitle);
+// }
 
 const createEvent = async (req, res) => {
   let newEvent = new Event({
@@ -28,4 +53,10 @@ const deleteAllEvents = async (req, res) => {
   });
 };
 
-module.exports = { getEvents, createEvent, deleteAllEvents };
+module.exports = {
+  getEvents,
+  getEventById,
+  // getEventByTitle,
+  createEvent,
+  deleteAllEvents,
+};
