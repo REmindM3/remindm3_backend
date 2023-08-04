@@ -8,15 +8,33 @@ const getEvents = async (req, res) => {
 };
 
 async function getEventById(req, res) {
-  let event = await Event.findById(req.params.id).catch((error) => {
+  try {
+    let event = await Event.findById(req.params.id);
+    if (!event) {
+      res.status(404).json({
+        error: "Id was not found in the database",
+      });
+    } else {
+      res.send(event);
+    }
+  } catch (error) {
     console.log("An Error Occurred While Accessing Data:\n" + error);
-    res.status(404).send;
-    res.json({
-      error: "Id was not found in the database",
+    res.status(500).json({
+      error: "An error occurred while accessing data",
     });
-  });
-  res.send(event);
+  }
 }
+
+// async function getEventById(req, res) {
+//   let event = await Event.findById(req.params.id).catch((error) => {
+//     console.log("An Error Occurred While Accessing Data:\n" + error);
+//     res.status(404).send;
+//     res.json({
+//       error: "Id was not found in the database",
+//     });
+//   });
+//   res.send(event);
+// }
 
 // async function getEventByTitle(req, res) {
 //   console.log(req.params);
@@ -49,7 +67,20 @@ const createEvent = async (req, res) => {
 const deleteAllEvents = async (req, res) => {
   await Event.deleteMany({});
   res.json({
-    message: "All Notes Deleted",
+    message: "All Events Deleted",
+  });
+};
+
+const deleteOneEvent = async (req, res) => {
+  await Event.findByIdAndDelete(req.params.id).catch((error) => {
+    console.log("An Error Occurred While Accessing Data:\n" + error);
+    res.status(404).send;
+    res.json({
+      error: "Id was not found in the database to delete",
+    });
+  });
+  res.json({
+    message: "Event Deleted",
   });
 };
 
@@ -59,4 +90,5 @@ module.exports = {
   // getEventByTitle,
   createEvent,
   deleteAllEvents,
+  deleteOneEvent,
 };

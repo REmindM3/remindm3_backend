@@ -6,6 +6,7 @@ const {
 //   getEventByTitle,
   createEvent,
   deleteAllEvents,
+  deleteOneEvent
 } = require("../controllers/event_controller");
 
 eventsRouter.get("/", getEvents);
@@ -17,5 +18,7 @@ eventsRouter.get("/:id", getEventById);
 eventsRouter.post("/", createEvent);
 
 eventsRouter.delete("/clear", deleteAllEvents);
+
+eventsRouter.delete("/:id", deleteOneEvent);
 
 module.exports = eventsRouter;
