@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const User = mongoose.model("User", {
+const UserSchema = mongoose.Schema({
   username: {
     type: String,
     unique: true,
@@ -9,6 +9,6 @@ const User = mongoose.model("User", {
   events: [{ type: mongoose.Types.ObjectId, ref: "Event" }],
 });
 
-// const User = mongoose.model('User', UserSchema)
+const User = mongoose.model('User', UserSchema)
 
 module.exports = User;

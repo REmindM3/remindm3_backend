@@ -22,7 +22,7 @@ app.use(
 
 const cors = require("cors");
 let corsOptions = {
-  origin: ["https://localhost:3000"],
+  origin: ["https://localhost:3007"],
   optionsSuccessStatus: 200,
 };
 
@@ -31,18 +31,44 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-async function dbConnect() {
-  try {
-    await mongoose.connect(
-      "mongodb+srv://13313:TTKp70e5DQwkkS36@cluster0.9gl1zri.mongodb.net/REmind_m3_db"
-    );
-    console.log("<=== Database Connected ===>");
-  } catch (error) {
-    console.log(`dbConnect failed, error:${JSON.stringify(error)}`);
-  }
+let databaseURL = "";
+switch (process.env.NODE_ENV.toLowerCase()) {
+  case "production":
+    databaseURL = process.env.DATABASE_URL;
+    break;
+  case "development":
+    databaseURL =
+      "mongodb+srv://13313:TTKp70e5DQwkkS36@cluster0.9gl1zri.mongodb.net/REmind_m3_db";
+    break;
+  case "test":
+    databaseURL =
+      "mongodb+srv://13313:TTKp70e5DQwkkS36@cluster0.9gl1zri.mongodb.net/REmind_m3_db_test";
+  default:
+    console.error("Error - Wrong Environment Mode, Database Cannot Connect");
 }
 
-dbConnect();
+const { databaseConnector } = require("./database");
+databaseConnector(databaseURL)
+  .then(() => {
+    console.log("<=== Database Connected ===>");
+  })
+  .catch((error) => {
+    console.log(`dbConnect failed, error:${JSON.stringify(error)}`);
+  });
+
+app.get("/databaseHealth", (request, response) => {
+  let databaseState = mongoose.connection.readyState;
+  let databaseName = mongoose.connection.name;
+  let databaseModels = mongoose.connection.modelNames();
+  let databaseHost = mongoose.connection.host;
+
+  response.json({
+    readyState: databaseState,
+    dbName: databaseName,
+    dbModels: databaseModels,
+    dbHost: databaseHost,
+  });
+});
 
 app.get("/", (req, res) => {
   res.json({
@@ -60,9 +86,9 @@ app.get("*", (req, res) => {
   res.status(404);
   res.json({
     message: "Oops, Route Not Found ... Hang In There, Baby!",
-    path: req.path
-  })
-})
+    path: req.path,
+  });
+});
 
 module.exports = {
   app,
