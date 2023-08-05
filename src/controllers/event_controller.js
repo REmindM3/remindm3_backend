@@ -3,20 +3,20 @@ const Event = require("../models/events");
 const { res } = require("express");
 const User = require("../models/user");
 
+
 const getEvents = async (req, res) => {
   // Build the query object
-  const query = {};
-  if (req.query.isPrivate) {
-    query.isPrivate = req.query.isPrivate === "true";
-  }
-  if (req.query.isActive) {
-    query.isActive = req.query.isActive === "true";
-  }
+  const query = { isPrivate: false, isActive: true};
+  // if (req.query.isActive) {
+  //   query.isActive = req.query.isActive === "true";
+  // }
 
   // Find events using the query object
   const events = await Event.find(query);
   res.send(events);
 };
+
+
 
 const getMyEvents = async (req, res) => {
   let user = await User.findOne({ username: req.body.username }).populate(
@@ -25,27 +25,7 @@ const getMyEvents = async (req, res) => {
   res.send(user.events);
 };
 
-// const getEvents = async (req, res) => {
-//   console.log(req.query);
-//   let events;
-//   if (Object.keys(req.query).length > 0) {
-//     if (req.query.isPrivate === "true")
-//       events = await Event.find({ isPrivate: true });
-//     else if (req.query.isPrivate === "false")
-//       events = await Event.find({ isPrivate: false });
-//     else if (req.query.isActive === "true")
-//       events = await Event.find({ isActive: true });
-//     else if (req.query.isActive === "false")
-//       events = await Event.find({ isActive: false });
-//     else {
-//       events = await Event.find();
-//     }
-//     res.send(events);
-//   } else {
-//     events = await Event.find();
-//     res.send(events);
-//   }
-// };
+
 
 async function getEventById(req, res) {
   try {
@@ -65,7 +45,20 @@ async function getEventById(req, res) {
   }
 }
 
+
+
 const createEvent = async (req, res) => {
+  // Check if isPrivate, title, and description are undefined
+  if (req.body.isPrivate === undefined) {
+    return res.status(400).send("!Field_Required: You Must choose If The Event Private Or Public.");
+  }
+  if (req.body.title === undefined) {
+    return res.status(400).send("!A Title Is Required.");
+  }
+  if (req.body.description === undefined) {
+    return res.status(400).send("!A Description Is Required");
+  }
+
   let user = await User.findOne({ username: req.body.username });
 
   let newEvent = new Event({
@@ -85,6 +78,9 @@ const createEvent = async (req, res) => {
     event: newEvent,
   });
 };
+
+
+
 
 const updateEvent = async (req, res) => {
   let updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, {
