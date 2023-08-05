@@ -20,7 +20,16 @@ app.use(
   })
 ); //
 
+const cors = require("cors");
+let corsOptions = {
+  origin: ["https://localhost:3000"],
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 async function dbConnect() {
   try {
@@ -37,7 +46,7 @@ dbConnect();
 
 app.get("/", (req, res) => {
   res.json({
-    message: "Welcome to the Remindm3 backend",
+    message: "Welcome To The REmind_M3 Backend",
   });
 });
 
@@ -46,6 +55,14 @@ app.use("/events", eventsRouter);
 
 const usersRouter = require("./routes/users_routes");
 app.use("/users", usersRouter);
+
+app.get("*", (req, res) => {
+  res.status(404);
+  res.json({
+    message: "Oops, Route Not Found ... Hang In There, Baby!",
+    path: req.path
+  })
+})
 
 module.exports = {
   app,
