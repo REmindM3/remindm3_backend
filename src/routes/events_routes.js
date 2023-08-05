@@ -2,6 +2,7 @@ const express = require("express");
 const eventsRouter = express.Router();
 const {
   getEvents,
+  getMyEvents,
   getEventById,
   createEvent,
   updateEvent,
@@ -10,6 +11,8 @@ const {
 } = require("../controllers/event_controller");
 
 eventsRouter.get("/", getEvents);
+
+eventsRouter.get("/my-events", getMyEvents);
 
 eventsRouter.get("/:id", getEventById);
 

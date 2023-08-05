@@ -1,24 +1,29 @@
 const mongoose = require("mongoose");
 const Event = require("../models/events");
 const { res } = require("express");
-
-
+const User = require("../models/user");
 
 const getEvents = async (req, res) => {
   // Build the query object
   const query = {};
   if (req.query.isPrivate) {
-    query.isPrivate = req.query.isPrivate === 'true';
+    query.isPrivate = req.query.isPrivate === "true";
   }
   if (req.query.isActive) {
-    query.isActive = req.query.isActive === 'true';
+    query.isActive = req.query.isActive === "true";
   }
 
   // Find events using the query object
   const events = await Event.find(query);
   res.send(events);
-}
+};
 
+const getMyEvents = async (req, res) => {
+  let user = await User.findOne({ username: req.body.username }).populate(
+    "events"
+  );
+  res.send(user.events);
+};
 
 // const getEvents = async (req, res) => {
 //   console.log(req.query);
@@ -61,6 +66,8 @@ async function getEventById(req, res) {
 }
 
 const createEvent = async (req, res) => {
+  let user = await User.findOne({ username: req.body.username });
+
   let newEvent = new Event({
     title: req.body.title,
     description: req.body.description,
@@ -70,8 +77,11 @@ const createEvent = async (req, res) => {
     createdAtDate: Date.now(),
   });
   await newEvent.save();
+  user.events.push(newEvent._id);
+  await user.save();
   res.status(201);
   res.json({
+    user: user,
     event: newEvent,
   });
 };
@@ -97,21 +107,52 @@ const deleteAllEvents = async (req, res) => {
   });
 };
 
+
 const deleteOneEvent = async (req, res) => {
-  await Event.findByIdAndDelete(req.params.id).catch((error) => {
+  let user = await User.findOne({ username: req.body.username });
+
+  const event = await Event.findByIdAndDelete(req.params.id).catch((error) => {
     console.log("An Error Occurred While Accessing Data:\n" + error);
     res.status(404).send;
     res.json({
       error: "Id was not found in the database to delete",
     });
   });
-  res.json({
-    message: "Event Deleted",
-  });
+
+  if (event) {
+    //Remove the event_id from the users events array
+    user.events.shift(event._id);
+    res.json({
+      message: "Event Deleted",
+    });
+  } else {
+    res.json({
+      error: "Id was not found in the database to delete",
+    });
+  }
 };
+
+
+// const deleteOneEvent = async (req, res) => {
+//   let user = await User.findOne({ username: req.body.username });
+
+//   event = await Event.findByIdAndDelete(req.params.id).catch((error) => {
+//     console.log("An Error Occurred While Accessing Data:\n" + error);
+//     res.status(404).send;
+//     res.json({
+//       error: "Id was not found in the database to delete",
+//     });
+//   });
+//   //Remove the event_id from the users events array
+//   user.events.shift(event._id);
+//   res.json({
+//     message: "Event Deleted",
+//   });
+// };
 
 module.exports = {
   getEvents,
+  getMyEvents,
   getEventById,
   createEvent,
   updateEvent,

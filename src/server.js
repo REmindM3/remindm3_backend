@@ -27,6 +27,9 @@ app.get("/", (req, res) => {
 const eventsRouter = require("./routes/events_routes");
 app.use("/events", eventsRouter);
 
+const usersRouter = require("./routes/users_routes");
+app.use("/users", usersRouter);
+
 module.exports = {
   app,
 };
