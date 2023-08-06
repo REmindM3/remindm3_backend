@@ -3,20 +3,14 @@ const Event = require("../models/events");
 const { res } = require("express");
 const User = require("../models/user");
 
-
 const getEvents = async (req, res) => {
   // Build the query object
-  const query = { isPrivate: false, isActive: true};
-  // if (req.query.isActive) {
-  //   query.isActive = req.query.isActive === "true";
-  // }
+  const query = { isPrivate: false, isActive: true };
 
   // Find events using the query object
   const events = await Event.find(query);
   res.send(events);
 };
-
-
 
 const getMyEvents = async (req, res) => {
   let user = await User.findOne({ username: req.body.username }).populate(
@@ -24,8 +18,6 @@ const getMyEvents = async (req, res) => {
   );
   res.send(user.events);
 };
-
-
 
 async function getEventById(req, res) {
   try {
@@ -45,12 +37,12 @@ async function getEventById(req, res) {
   }
 }
 
-
-
 const createEvent = async (req, res) => {
   // Check if isPrivate, title, and description are undefined
   if (req.body.isPrivate === undefined) {
-    return res.status(400).send("!Field_Required: You Must choose If The Event Private Or Public.");
+    return res
+      .status(400)
+      .send("!Field_Required: You Must choose If The Event Private Or Public.");
   }
   if (req.body.title === undefined) {
     return res.status(400).send("!A Title Is Required.");
@@ -66,21 +58,15 @@ const createEvent = async (req, res) => {
     description: req.body.description,
     isActive: req.body.isActive,
     isPrivate: req.body.isPrivate,
-    alertDate: new Date().toLocaleDateString(),
-    createdAtDate: Date.now(),
+    alertDate: req.body.alertDate,
+    createdAtDate: req.body.createdAtDate,
   });
   await newEvent.save();
   user.events.push(newEvent._id);
   await user.save();
-  res.status(201);
-  res.json({
-    user: user,
-    event: newEvent,
-  });
+  res.status(201).send; 
+  res.json(newEvent);
 };
-
-
-
 
 const updateEvent = async (req, res) => {
   let updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, {
@@ -102,7 +88,6 @@ const deleteAllEvents = async (req, res) => {
     message: "All Events Deleted",
   });
 };
-
 
 const deleteOneEvent = async (req, res) => {
   let user = await User.findOne({ username: req.body.username });
@@ -127,7 +112,6 @@ const deleteOneEvent = async (req, res) => {
     });
   }
 };
-
 
 // const deleteOneEvent = async (req, res) => {
 //   let user = await User.findOne({ username: req.body.username });
