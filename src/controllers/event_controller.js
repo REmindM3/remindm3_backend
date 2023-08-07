@@ -64,7 +64,7 @@ const createEvent = async (req, res) => {
   await newEvent.save();
   user.events.push(newEvent._id);
   await user.save();
-  res.status(201).send; 
+  res.status(201).send;
   res.json(newEvent);
 };
 
