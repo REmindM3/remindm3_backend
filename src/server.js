@@ -23,7 +23,7 @@ app.use(
 const cors = require("cors");
 let corsOptions = {
   origin: ["http://localhost:3000"],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -37,7 +37,8 @@ switch (process.env.NODE_ENV.toLowerCase()) {
     databaseURL = process.env.DATABASE_URL;
     break;
   case "development":
-    databaseURL = "mongodb+srv://13313:TTKp70e5DQwkkS36@cluster0.9gl1zri.mongodb.net/REmind_m3_db";
+    databaseURL =
+      "mongodb+srv://13313:TTKp70e5DQwkkS36@cluster0.9gl1zri.mongodb.net/REmind_m3_db";
     break;
   case "test":
     databaseURL = "mongodb://127.0.0.1:27017/REmind_m3_db_test";

@@ -7,7 +7,7 @@ const EventSchema = mongoose.Schema({
   isPrivate: Boolean,
   alertDate: Date,
   createdAtDate: Date,
-  // creator: this.findById
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: 'Username' }
 });
 
 const Event = mongoose.model("Event", EventSchema);
