@@ -1,15 +1,43 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const EventSchema = mongoose.Schema({
-  title: String,
-  description: String,
-  isActive: Boolean,
-  isPrivate: Boolean,
-  alertDate: Date,
-  createdAtDate: Date,
-  // creator: this.findById
+// Define the schema for the events collection
+const eventSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  description: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+  isPrivate: {
+    type: Boolean,
+    required: true,
+  },
+  alertDate: {
+    type: Date,
+    default: Date.now(),
+  },
+  createdAtDate: {
+    type: Date,
+    default: Date.now(),
+  },
+  username: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
-const Event = mongoose.model("Event", EventSchema);
+// Create a model for the events collection
+const Event = mongoose.model("Event", eventSchema);
 
+// Export the model
 module.exports = Event;
