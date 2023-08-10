@@ -38,11 +38,11 @@ switch (process.env.NODE_ENV.toLowerCase()) {
     break;
   case "development":
     databaseURL =
-      "mongodb+srv://13313:TTKp70e5DQwkkS36@cluster0.9gl1zri.mongodb.net/REmind_m3_db";
+      "mongodb://127.0.0.1:27017/REmind_m3_db";
     break;
   case "test":
     databaseURL =
-      "mongodb+srv://13313:TTKp70e5DQwkkS36@cluster0.9gl1zri.mongodb.net/REmind_m3_db_test";
+      "mongodb://127.0.0.1:27017/REmind_m3_db_test";
   default:
     console.error("Error - Wrong Environment Mode, Database Cannot Connect");
 }
