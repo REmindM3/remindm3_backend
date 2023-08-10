@@ -13,10 +13,25 @@ const getEvents = async (req, res) => {
 };
 
 const getMyEvents = async (req, res) => {
-  let user = await User.findOne({ username: req.body.username }).populate(
-    "events"
-  );
-  res.json(user.events);
+  // Find the user with the specified username and handle any errors
+  let user = await User.findOne({ username: req.body.username })
+    .populate("events")
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: "An error occurred while finding the user" });
+    });
+
+  // Check if the user is not null
+  if (user) {
+    // Build the query object to include both public and private events
+    const query = { $or: [{ isPrivate: false }, { isPrivate: true }] };
+    // Find events using the query object and the user's events array
+    const events = await Event.find(query).where("_id").in(user.events);
+    res.json(events);
+  } else {
+    // No user was found with the specified username
+    res.status(404).json({ error: "User not found" });
+  }
 };
 
 async function getEventById(req, res) {
